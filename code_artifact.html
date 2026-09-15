@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신비로운 별자리 운세</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: radial-gradient(ellipse at bottom, #1b0c3f 0%, #09031d 100%);
+            color: #f3f4f6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Twinkling Stars Background */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #ffffff;
+            border-radius: 50%;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
+        }
+
+        /* Glassmorphism card effect */
+        .glass-card {
+            background: rgba(25, 14, 56, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(167, 139, 250, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(12, 5, 33, 0.5);
+        }
+
+        .zodiac-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .zodiac-btn:hover {
+            transform: translateY(-5px);
+            border-color: rgba(192, 132, 252, 0.6);
+            box-shadow: 0 10px 25px -5px rgba(168, 85, 247, 0.4);
+            background: rgba(45, 27, 89, 0.7);
+        }
+
+        /* Pulsing Glow Animation */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(216, 180, 254, 0.6); }
+        }
+
+        .fortune-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="relative flex flex-col items-center justify-between min-h-screen p-4 sm:p-8">
+
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- Header Section -->
+    <header class="z-10 text-center mt-6 mb-8">
+        <h1 class="text-3xl sm:text-5xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 mb-2 drop-shadow-md">
+            ✨ 별자리 신비 운세 ✨
+        </h1>
+        <p class="text-sm sm:text-base text-purple-200/80 font-light">
+            우주의 기운을 담아 오늘 당신의 행운을 점쳐보세요
+        </p>
+    </header>
+
+    <main class="z-10 w-full max-w-4xl mx-auto flex flex-col items-center justify-center flex-grow mb-10">
+        
+        <!-- Selection View -->
+        <div id="selectionView" class="w-full transition-all duration-500">
+            <div class="text-center mb-6">
+                <span class="inline-block px-4 py-1.5 rounded-full text-xs font-medium bg-purple-900/60 text-purple-300 border border-purple-500/30 mb-2">
+                    Step 1. 별자리 선택
+                </span>
+                <h2 class="text-lg sm:text-xl font-semibold text-purple-100">당신의 별자리를 골라주세요</h2>
+            </div>
+
+            <!-- Zodiac Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
+                <!-- Javascript will dynamically inject buttons here -->
+            </div>
+        </div>
+
+        <!-- Result View (Hidden by default) -->
+        <div id="resultView" class="w-full max-w-xl hidden transition-all duration-500 transform scale-95 opacity-0">
+            <div class="glass-card fortune-glow rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden">
+                
+                <!-- Decorative background light bleed -->
+                <div class="absolute -top-24 -left-24 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Selected Zodiac Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-900/80 border border-purple-400/40 text-purple-200 mb-6 shadow-inner">
+                    <span id="resultIcon" class="text-2xl"></span>
+                    <span id="resultName" class="font-bold tracking-wide"></span>
+                    <span class="text-xs text-purple-300/70" id="resultDate"></span>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Fortune Message Box -->
+                    <div class="bg-purple-950/40 rounded-2xl p-5 border border-purple-800/30">
+                        <h3 class="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-2">오늘의 운세 메시지</h3>
+                        <p id="fortuneText" class="text-base sm:text-lg text-purple-100 font-light leading-relaxed"></p>
+                    </div>
+
+                    <!-- Lucky Details Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Lucky Color -->
+                        <div class="bg-purple-950/40 rounded-2xl p-4 border border-purple-800/30 flex flex-col items-center justify-center">
+                            <span class="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-2">행운의 색상</span>
+                            <div class="flex items-center gap-2">
+                                <div id="colorSwatch" class="w-5 h-5 rounded-full shadow-md border border-white/20"></div>
+                                <span id="colorName" class="font-medium text-sm text-purple-100"></span>
+                            </div>
+                        </div>
+
+                        <!-- Lucky Number -->
+                        <div class="bg-purple-950/40 rounded-2xl p-4 border border-purple-800/30 flex flex-col items-center justify-center">
+                            <span class="text-xs font-semibold uppercase tracking-widest text-purple-400 mb-2">행운의 숫자</span>
+                            <span id="luckyNumber" class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-purple-300"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="mt-8">
+                    <button onclick="resetSelection()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-medium shadow-lg shadow-purple-900/40 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        다른 별자리 운세 보기
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="z-10 text-center text-xs text-purple-300/50 py-4">
+        © Cosmic Oracle. 매일 새로운 우주의 에너지를 받아보세요.
+    </footer>
+
+    <script>
+        // Starry background generator
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const count = 100;
+            
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                const size = Math.random() * 2.5 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                const duration = Math.random() * 3 + 2;
+                star.style.setProperty('--duration', `${duration}s`);
+                
+                star.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(star);
+            }
+        }
+
+        // Zodiac Data Array
+        const zodiacs = [
+            { id: 'aries', name: '양자리', icon: '♈', date: '3.21 ~ 4.19' },
+            { id: 'taurus', name: '황소자리', icon: '♉', date: '4.20 ~ 5.20' },
+            { id: 'gemini', name: '쌍둥이자리', icon: '♊', date: '5.21 ~ 6.21' },
+            { id: 'cancer', name: '게자리', icon: '♋', date: '6.22 ~ 7.22' },
+            { id: 'leo', name: '사자자리', icon: '♌', date: '7.23 ~ 8.22' },
+            { id: 'virgo', name: '처녀자리', icon: '♍', date: '8.23 ~ 9.23' },
+            { id: 'libra', name: '천칭자리', icon: '♎', date: '9.24 ~ 10.22' },
+            { id: 'scorpio', name: '전갈자리', icon: '♏', date: '10.23 ~ 11.22' },
+            { id: 'sagittarius', name: '사수자리', icon: '♐', date: '11.23 ~ 12.21' },
+            { id: 'capricorn', name: '염소자리', icon: '♑', date: '12.22 ~ 1.19' },
+            { id: 'aquarius', name: '물병자리', icon: '♒', date: '1.20 ~ 2.18' },
+            { id: 'pisces', name: '물고기자리', icon: '♓', date: '2.19 ~ 3.20' }
+        ];
+
+        // Fortune message pools
+        const fortunes = [
+            "생각지도 못한 행운이 찾아오는 하루입니다. 주변 사람들의 작은 조언에 귀를 기울여보세요.",
+            "노력해온 일에서 빛을 발하는 순간이 다가오고 있습니다. 자신감을 가지고 과감하게 도전하세요.",
+            "마음의 여유가 필요한 시기입니다. 잠시 숨을 고르고 당신만을 위한 휴식을 선물해 보세요.",
+            "뜻밖의 인연이나 반가운 소식을 접하게 될 수 있습니다. 열린 마음으로 하루를 맞이해보세요.",
+            "직관력이 매우 예리해지는 날입니다. 중요한 결정이 있다면 당신의 첫 번째 직감을 믿어보세요.",
+            "긍정적인 에너지와 활력이 넘쳐나는 하루입니다. 평소 미루어 두었던 일을 시작하기에 완벽한 시기입니다.",
+            "작은 친절이 큰 기쁨으로 돌아오는 날입니다. 따뜻한 말 한마디로 주변을 환하게 밝혀주세요.",
+            "재물운과 업무운이 상승 곡선을 그리고 있습니다. 침착하고 지혜롭게 기회를 붙잡아 보세요."
+        ];
+
+        // Lucky colors pool
+        const colors = [
+            { name: '미스틱 퍼플', hex: '#8b5cf6' },
+            { name: '딥 네이비', hex: '#1e1b4b' },
+            { name: '로얄 인디고', hex: '#4338ca' },
+            { name: '로맨틱 핑크', hex: '#ec4899' },
+            { name: '골든 앰버', hex: '#f59e0b' },
+            { name: '에메랄드 민트', hex: '#10b981' },
+            { name: '크리스탈 화이트', hex: '#f8fafc' },
+            { name: '스카이 블루', hex: '#38bdf8' }
+        ];
+
+        // Render zodiac selection buttons
+        function renderZodiacGrid() {
+            const grid = document.querySelector('.grid-cols-2');
+            grid.innerHTML = '';
+
+            zodiacs.forEach(zodiac => {
+                const button = document.createElement('button');
+                button.className = 'zodiac-btn glass-card p-4 sm:p-5 rounded-2xl flex flex-col items-center justify-center gap-2 group cursor-pointer';
+                button.onclick = () => selectZodiac(zodiac);
+                
+                button.innerHTML = `
+                    <span class="text-3xl sm:text-4xl group-hover:scale-125 transition-transform duration-300">${zodiac.icon}</span>
+                    <span class="font-semibold text-purple-100 text-sm sm:text-base">${zodiac.name}</span>
+                    <span class="text-xs text-purple-300/60 font-light">${zodiac.date}</span>
+                `;
+                grid.appendChild(button);
+            });
+        }
+
+        // Handle zodiac selection and random generation
+        function selectZodiac(zodiac) {
+            // Pick random elements
+            const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const randomNumber = Math.floor(Math.random() * 45) + 1;
+
+            // Populate result view
+            document.getElementById('resultIcon').innerText = zodiac.icon;
+            document.getElementById('resultName').innerText = zodiac.name;
+            document.getElementById('resultDate').innerText = `(${zodiac.date})`;
+            document.getElementById('fortuneText').innerText = randomFortune;
+            document.getElementById('colorName').innerText = randomColor.name;
+            document.getElementById('colorSwatch').style.backgroundColor = randomColor.hex;
+            document.getElementById('luckyNumber').innerText = randomNumber;
+
+            // Animate transition
+            const selectionView = document.getElementById('selectionView');
+            const resultView = document.getElementById('resultView');
+
+            selectionView.classList.add('opacity-0', 'scale-95', 'hidden');
+            resultView.classList.remove('hidden');
+            setTimeout(() => {
+                resultView.classList.remove('opacity-0', 'scale-95');
+                resultView.classList.add('opacity-100', 'scale-100');
+            }, 50);
+        }
+
+        // Reset and return to selection view
+        function resetSelection() {
+            const selectionView = document.getElementById('selectionView');
+            const resultView = document.getElementById('resultView');
+
+            resultView.classList.remove('opacity-100', 'scale-100');
+            resultView.classList.add('opacity-0', 'scale-95');
+
+            setTimeout(() => {
+                resultView.classList.add('hidden');
+                selectionView.classList.remove('hidden');
+                setTimeout(() => {
+                    selectionView.classList.remove('opacity-0', 'scale-95');
+                    selectionView.classList.add('opacity-100', 'scale-100');
+                }, 50);
+            }, 300);
+        }
+
+        // Initialize on load
+        window.onload = () => {
+            createStars();
+            renderZodiacGrid();
+        };
+    </script>
+</body>
+</html>
